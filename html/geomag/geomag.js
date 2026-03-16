@@ -21,7 +21,7 @@
     decimal degrees), and, optionally, altitude in feet (default is 0), and
     a date object (default is the current system time).
 
-    let cof = syncXHR('http://host/path/WMM.COF'),
+    var cof = syncXHR('http://host/path/WMM.COF'),
 	    wmm = cof2Obj(cof),
 	    geoMag = geoMagFactory(wmm),
 	    latitude = 40.0,                // decimal degrees (north is positive)
@@ -30,8 +30,8 @@
 	    time = new Date(2012, 4, 20),   // (optional, default is the current
                                         // system time)
 	    myGeoMag = geoMag(latitude, longitude, altitude, time),
-	    magneticletiation = myGeoMag.dec,   // Geomagnetic declination
-                                            // (letiation) in decimal degrees
+	    magneticVariation = myGeoMag.dec,   // Geomagnetic declination
+                                            // (variation) in decimal degrees
                                             // -- east is positive
 	    magneticDip = myGeoMag.dip, // Geomagnetic dip in decimal degrees
                                     // (down is positive)
@@ -60,7 +60,7 @@ function geoMagFactory(wmm) {
 		return deg * (Math.PI / 180);
 	}
 
-	let i, model, epoch = wmm.epoch,
+	var i, model, epoch = wmm.epoch,
 		z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 		maxord = 12,
 		tc = [z.slice(), z.slice(), z.slice(), z.slice(), z.slice(), z.slice(),
@@ -151,7 +151,7 @@ function geoMagFactory(wmm) {
 	return function (glat, glon, h, date) {
 		function decimalDate(date) {
 			date = date || new Date();
-			let year = date.getUTCFullYear(),
+			var year = date.getUTCFullYear(),
 				daysInYear = 365 +
 					(((year % 400 === 0) || (year % 4 === 0 && (year % 100 > 0))) ? 1 : 0),
 				msInYear = daysInYear * 24 * 60 * 60 * 1000;
@@ -159,7 +159,7 @@ function geoMagFactory(wmm) {
 			return date.getUTCFullYear() + (date.valueOf() - Date.UTC(year, 0)) / msInYear;
 		}
 
-		let alt = (h / 3280.8399) || 0, // convert h (in feet) to kilometers or set default of 0
+		var alt = (h / 3280.8399) || 0, // convert h (in feet) to kilometers or set default of 0
 			time = decimalDate(date),
 			dt = time - epoch,
 			rlat = deg2rad(glat),
@@ -302,10 +302,10 @@ function geoMagFactory(wmm) {
 		dip = rad2deg(Math.atan2(bz, bh));
 
 		/*
-			COMPUTE MAGNETIC GRID letIATION IF THE CURRENT
+			COMPUTE MAGNETIC GRID VARIATION IF THE CURRENT
 			GEODETIC POSITION IS IN THE ARCTIC OR ANTARCTIC
 			(I.E. GLAT > +55 DEGREES OR GLAT < -55 DEGREES)
-			OTHERWISE, SET MAGNETIC GRID letIATION TO -999.0
+			OTHERWISE, SET MAGNETIC GRID VARIATION TO -999.0
 		*/
 
 		if (Math.abs(glat) >= 55.0) {
@@ -325,37 +325,4 @@ function geoMagFactory(wmm) {
 
 		return {dec: dec, dip: dip, ti: ti, bh: bh, bx: bx, by: by, bz: bz, lat: glat, lon: glon, gv: gv, epoch: epoch};
 	};
-}
-/*
-	cof2Obj.js
-	Converts the WMM.COF text to a JSON object usable by geoMagFactory().
-*/
-
-function cof2Obj() {
-let cof=" 2020.0 WMM-2020 12/10/2019|1 0 -29404.5 0.0 6.7 0.0|1 1 -1450.7 4652.9 7.7 -25.1|2 0 -2500.0 0.0 -11.5 0.0|2 1 2982.0 -2991.6 -7.1 -30.2|2 2 1676.8 -734.8 -2.2 -23.9|3 0 1363.9 0.0 2.8 0.0|3 1 -2381.0 -82.2 -6.2 5.7|3 2 1236.2 241.8 3.4 -1.0|3 3 525.7 -542.9 -12.2 1.1|4 0 903.1 0.0 -1.1 0.0|4 1 809.4 282.0 -1.6 0.2|4 2 86.2 -158.4 -6.0 6.9|4 3 -309.4 199.8 5.4 3.7|4 4 47.9 -350.1 -5.5 -5.6|5 0 -234.4 0.0 -0.3 0.0|5 1 363.1 47.7 0.6 0.1|5 2 187.8 208.4 -0.7 2.5|5 3 -140.7 -121.3 0.1 -0.9|5 4 -151.2 32.2 1.2 3.0|5 5 13.7 99.1 1.0 0.5|6 0 65.9 0.0 -0.6 0.0|6 1 65.6 -19.1 -0.4 0.1|6 2 73.0 25.0 0.5 -1.8|6 3 -121.5 52.7 1.4 -1.4|6 4 -36.2 -64.4 -1.4 0.9|6 5 13.5 9.0 -0.0 0.1|6 6 -64.7 68.1 0.8 1.0|7 0 80.6 0.0 -0.1 0.0|7 1 -76.8 -51.4 -0.3 0.5|7 2 -8.3 -16.8 -0.1 0.6|7 3 56.5 2.3 0.7 -0.7|7 4 15.8 23.5 0.2 -0.2|7 5 6.4 -2.2 -0.5 -1.2|7 6 -7.2 -27.2 -0.8 0.2|7 7 9.8 -1.9 1.0 0.3|8 0 23.6 0.0 -0.1 0.0|8 1 9.8 8.4 0.1 -0.3|8 2 -17.5 -15.3 -0.1 0.7|8 3 -0.4 12.8 0.5 -0.2|8 4 -21.1 -11.8 -0.1 0.5|8 5 15.3 14.9 0.4 -0.3|8 6 13.7 3.6 0.5 -0.5|8 7 -16.5 -6.9 0.0 0.4|8 8 -0.3 2.8 0.4 0.1|9 0 5.0 0.0 -0.1 0.0|9 1 8.2 -23.3 -0.2 -0.3|9 2 2.9 11.1 -0.0 0.2|9 3 -1.4 9.8 0.4 -0.4|9 4 -1.1 -5.1 -0.3 0.4|9 5 -13.3 -6.2 -0.0 0.1|9 6 1.1 7.8 0.3 -0.0|9 7 8.9 0.4 -0.0 -0.2|9 8 -9.3 -1.5 -0.0 0.5|9 9 -11.9 9.7 -0.4 0.2|10 0 -1.9 0.0 0.0 0.0|10 1 -6.2 3.4 -0.0 -0.0|10 2 -0.1 -0.2 -0.0 0.1|10 3 1.7 3.5 0.2 -0.3|10 4 -0.9 4.8 -0.1 0.1|10 5 0.6 -8.6 -0.2 -0.2|10 6 -0.9 -0.1 -0.0 0.1|10 7 1.9 -4.2 -0.1 -0.0|10 8 1.4 -3.4 -0.2 -0.1|10 9 -2.4 -0.1 -0.1 0.2|10 10 -3.9 -8.8 -0.0 -0.0|11 0 3.0 0.0 -0.0 0.0|11 1 -1.4 -0.0 -0.1 -0.0|11 2 -2.5 2.6 -0.0 0.1|11 3 2.4 -0.5 0.0 0.0|11 4 -0.9 -0.4 -0.0 0.2|11 5 0.3 0.6 -0.1 -0.0|11 6 -0.7 -0.2 0.0 0.0|11 7 -0.1 -1.7 -0.0 0.1|11 8 1.4 -1.6 -0.1 -0.0|11 9 -0.6 -3.0 -0.1 -0.1|11 10 0.2 -2.0 -0.1 0.0|11 11 3.1 -2.6 -0.1 -0.0|12 0 -2.0 0.0 0.0 0.0|12 1 -0.1 -1.2 -0.0 -0.0|12 2 0.5 0.5 -0.0 0.0|12 3 1.3 1.3 0.0 -0.1|12 4 -1.2 -1.8 -0.0 0.1|12 5 0.7 0.1 -0.0 -0.0|12 6 0.3 0.7 0.0 0.0|12 7 0.5 -0.1 -0.0 -0.0|12 8 -0.2 0.6 0.0 0.1|12 9 -0.5 0.2 -0.0 -0.0|12 10 0.1 -0.9 -0.0 -0.0|12 11 -1.1 -0.0 -0.0 0.0|12 12 -0.3 0.5 -0.1 -0.1"
-	'use strict';
-	let modelLines = cof.split('|'),
-		wmm = [],
-		i, vals, epoch, model, modelDate;
-	for (i in modelLines) {
-		if (modelLines.hasOwnProperty(i)) {
-			vals = modelLines[i].replace(/^\s+|\s+$/g, "").split(/\s+/);
-			if (vals.length === 3) {
-				epoch = parseFloat(vals[0]);
-				model = vals[1];
-				modelDate = vals[2];
-			} else if (vals.length === 6) {
-				wmm.push({
-					n: parseInt(vals[0], 10),
-					m: parseInt(vals[1], 10),
-					gnm: parseFloat(vals[2]),
-					hnm: parseFloat(vals[3]),
-					dgnm: parseFloat(vals[4]),
-					dhnm: parseFloat(vals[5])
-				});
-			}
-		}
-	}
-
-	return {epoch: epoch, model: model, modelDate: modelDate, wmm: wmm};
 }

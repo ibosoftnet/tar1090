@@ -511,7 +511,13 @@ function afterFirstFetch() {
         }
 
 
-        geoMag = geoMagFactory(cof2Obj());
+        // IBOSOFT CUSTOMIZATION: REMOVED geoMagFactory(cof2Obj()) — WMM2020 COF gömülüydü
+        // geoMag = geoMagFactory(cof2Obj());
+        // IBOSOFT CUSTOMIZATION: WMM2025.COF fetch ile asenkron yükleniyor (geomag2020.js → geomag/ klasörü)
+        fetch('geomag/WMM2025.COF')
+            .then(function(r) { return r.text(); })
+            .then(function(cofText) { geoMag = geoMagFactory(cof2Obj(cofText)); })
+            .catch(function(e) { console.error('WMM2025.COF yüklenemedi:', e); });
 
         db_load_type_cache().always(function() {
             refresh();
