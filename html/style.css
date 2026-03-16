@@ -47,7 +47,7 @@ select {
     width:  calc(180px * var(--SCALE));
     height: 100%;
     overflow: auto;
-    z-index: 1;
+    z-index: 100; /* IBOSOFT CUSTOMIZATION: 1 → 100, sidebar above map */
     background-color: var(--BGCOLOR1);
 }
 .aggregator-selected-bg:before {
@@ -169,7 +169,7 @@ select {
     cursor: ew-resize;
     display: block;
     position: absolute;
-    z-index: 99;
+    z-index: 1000; /* IBOSOFT CUSTOMIZATION: 99 → 1000, splitter above all UI during drag */
     top:  calc( 5px * var(--SCALE));
     left: calc( 0px * var(--SCALE));
     float: right;
@@ -207,7 +207,7 @@ select {
 /* remove the blue highlighting around the map buttons */
 .ol-control button {
     outline: none;
-    z-index: 999;
+    z-index: 200 !important; /* IBOSOFT CUSTOMIZATION: 999 → 200 !important, AIS Map SDK UI takes priority */
 }
 
 .ol-zoom-in {

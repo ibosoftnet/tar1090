@@ -16,7 +16,7 @@ let TrackDirectionArrows = ["\u21e7","\u2b00","\u21e8","\u2b02","\u21e9","\u2b03
 let UnitLabels = {
     'altitude': { metric: "m", imperial: "ft", nautical: "ft"},
     'speed': { metric: "km/h", imperial: "mph", nautical: "kt" },
-    'distance': { metric: "km", imperial: "mi", nautical: "nmi" },
+    'distance': { metric: "km", imperial: "mi", nautical: "NM" }, // IBOSOFT CUSTOMIZATION: "nmi" → "NM"
     'verticalRate': { metric: "m/s", imperial: "ft/min", nautical: "ft/min" },
     'distanceShort': { metric: "m", imperial: "ft", nautical: "m" }
 };
@@ -624,12 +624,13 @@ function wqi(data) {
 
         if (ac.nav_modes) {
             ac.nav_modes = [];
-            if (nav_modes & 1) ac.nav_modes.push('autopilot');
-            if (nav_modes & 2) ac.nav_modes.push('vnav');
-            if (nav_modes & 4) ac.nav_modes.push('alt_hold');
-            if (nav_modes & 8) ac.nav_modes.push('approach');
-            if (nav_modes & 16) ac.nav_modes.push('lnav');
-            if (nav_modes & 32) ac.nav_modes.push('tcas');
+            // IBOSOFT CUSTOMIZATION: Nav mode labels shortened for display (autopilot→AP, vnav→VNAV, alt_hold→ALT HOLD, approach→APP, lnav→LNAV, tcas→TCAS)
+            if (nav_modes & 1) ac.nav_modes.push('AP');
+            if (nav_modes & 2) ac.nav_modes.push('VNAV');
+            if (nav_modes & 4) ac.nav_modes.push('ALT HOLD');
+            if (nav_modes & 8) ac.nav_modes.push('APP');
+            if (nav_modes & 16) ac.nav_modes.push('LNAV');
+            if (nav_modes & 32) ac.nav_modes.push('TCAS');
         }
         switch (ac.type) {
             case  0: ac.type = 'adsb_icao';        break;

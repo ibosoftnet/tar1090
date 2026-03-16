@@ -29,15 +29,17 @@ let DisplayUnits = "nautical";
 // degrees.
 
 // The google maps zoom level, 0 - 16, lower is further out
-let DefaultZoomLvl   = 9;
+// IBOSOFT CUSTOMIZATION
+let DefaultZoomLvl   = 7;
 
 let autoselectCoords = null;
 
 let showGrid = false;
 
 
-let SiteShow    = true;           // true to show a center marker
-let SiteName    = "My Radar Site"; // tooltip of the marker
+// IBOSOFT CUSTOMIZATION
+let SiteShow    = false;           // false to hide the center marker
+let SiteName    = "Ibosoft Surveillance"; // tooltip of the marker
 
 // Update GPS location (keep map centered on GPS location)
 let updateLocation = false;
@@ -59,24 +61,27 @@ let actual_range_outline_dash = null; // null - solid line, [5, 5] - dashed line
 let actual_range_show = true;
 
 // which map is displayed to new visitors
-let MapType_tar1090 = "osm";
+// IBOSOFT CUSTOMIZATION
+let MapType_tar1090 = "esri_gray";
 let defaultOverlays = [];
-let dwdLayers = 'dwd:RADOLAN-RY';
+let dwdLayers = 'dwd:RADOLAN-RY'; // katmandan iptal edildi
 
 // Default map dim state
 let MapDim = true;
-let mapDimPercentage = 0.45;
+// IBOSOFT CUSTOMIZATION
+let mapDimPercentage = 0.1;
 let mapContrastPercentage = 0;
 
 // opacities for various overlays
-let nexradOpacity = 0.35
-let dwdRadolanOpacity = 0.30;
+let nexradOpacity = 0.35 // katmandan iptal edildi
+let dwdRadolanOpacity = 0.30; // katmandan iptal edildi
 let rainViewerRadarOpacity = 0.30;
-let rainViewerCloudsOpacity = 0.30;
-let noaaInfraredOpacity = 0.35;
-let noaaRadarOpacity = 0.35;
-let openAIPOpacity = 0.70;
-let tfrOpacity = 0.70;
+let rainViewerCloudsOpacity = 0.30; // katmandan iptal edildi
+let noaaInfraredOpacity = 0.35; // katmandan iptal edildi
+let noaaRadarOpacity = 0.35; // katmandan iptal edildi
+// IBOSOFT CUSTOMIZATION
+let openAIPOpacity = 1.0; // katmandan ayarlandi
+let tfrOpacity = 0.70; // katmandan iptal edildi
 
 let offlineMapDetail = -1;
 let offlineMapDetailOFM = -1;
@@ -107,111 +112,98 @@ let lineWidth = 1.15;
 let OutlineADSBColor = '#000000';
 
 // Outline width for aircraft icons
-let outlineWidth = 0.90;
+// IBOSOFT CUSTOMIZATION
+let outlineWidth = 0.80;
 
 // constant html color for markers / tracks
 let monochromeMarkers = null;
 let monochromeTracks = null;
 
-let altitudeChartDefaultState = true;
+// IBOSOFT CUSTOMIZATION
+let altitudeChartDefaultState = false;
 
 // These settings control the coloring of aircraft by altitude.
 // All color values are given as Hue (0-359) / Saturation (0-100) / Lightness (0-100)
+
+// IBOSOFT CUSTOMIZATION: REMOVED — replaced with monochrome scheme below
+//let ColorByAlt = {
+//	// HSL for planes with unknown altitude:
+//	unknown : { h: 0,   s: 0,   l: 75 },
+//
+//	// HSL for planes that are on the ground:
+//	ground  : { h: 220, s: 0, l: 30 },
+//
+//	air : {
+//		h: [ { alt: 0,  val: 20 },    // orange
+//			{ alt: 2000, val: 32.5 },   // yellow
+//			{ alt: 4000, val: 43 },   // yellow
+//			{ alt: 6000, val: 54 },   // yellow
+//			{ alt: 8000, val: 72 },   // yellow
+//			{ alt: 9000, val: 85 },   // green yellow
+//			{ alt: 11000, val: 140 },   // light green
+//			{ alt: 40000, val: 300 } , // magenta
+//			{ alt: 51000, val: 360 } , // red
+//		],
+//		s: 88,
+//		l: [
+//			{ h: 0,   val: 53},
+//			{ h: 20,  val: 50},
+//			{ h: 32,  val: 54},
+//			{ h: 40,  val: 52},
+//			{ h: 46,  val: 51},
+//			{ h: 50,  val: 46},
+//			{ h: 60,  val: 43},
+//			{ h: 80,  val: 41},
+//			{ h: 100, val: 41},
+//			{ h: 120, val: 41},
+//			{ h: 140, val: 41},
+//			{ h: 160, val: 40},
+//			{ h: 180, val: 40},
+//			{ h: 190, val: 44},
+//			{ h: 198, val: 50},
+//			{ h: 200, val: 58},
+//			{ h: 220, val: 58},
+//			{ h: 240, val: 58},
+//			{ h: 255, val: 55},
+//			{ h: 266, val: 55},
+//			{ h: 270, val: 58},
+//			{ h: 280, val: 58},
+//			{ h: 290, val: 47},
+//			{ h: 300, val: 43},
+//			{ h: 310, val: 48},
+//			{ h: 320, val: 48},
+//			{ h: 340, val: 52},
+//			{ h: 360, val: 53},
+//		],
+//	},
+//	selected : { h: 0, s: 10, l: 5 },
+//	stale :    { h: 0, s: -35, l: 9 },
+//	mlat :     { h: 0, s: 0, l: 0 }
+//};
+
+// IBOSOFT CUSTOMIZATION — monochrome green color scheme
 let ColorByAlt = {
-	// HSL for planes with unknown altitude:
-	unknown : { h: 0,   s: 0,   l: 75 },
-
-	// HSL for planes that are on the ground:
-	ground  : { h: 220, s: 0, l: 30 },
-
-	air : {
-		// These define altitude-to-hue mappings
-		// at particular altitudes; the hue
-		// for intermediate altitudes that lie
-		// between the provided altitudes is linearly
-		// interpolated.
-		//
-		// Mappings must be provided in increasing
-		// order of altitude.
-		//
-		// Altitudes below the first entry use the
-		// hue of the first entry; altitudes above
-		// the last entry use the hue of the last
-		// entry.
-		h: [ { alt: 0,  val: 20 },    // orange
-			{ alt: 2000, val: 32.5 },   // yellow
-			{ alt: 4000, val: 43 },   // yellow
-			{ alt: 6000, val: 54 },   // yellow
-			{ alt: 8000, val: 72 },   // yellow
-			{ alt: 9000, val: 85 },   // green yellow
-			{ alt: 11000, val: 140 },   // light green
-			{ alt: 40000, val: 300 } , // magenta
-			{ alt: 51000, val: 360 } , // red
-		],
-		s: 88,
-		l: [
-			{ h: 0,   val: 53},
-			{ h: 20,  val: 50},
-			{ h: 32,  val: 54},
-			{ h: 40,  val: 52},
-			{ h: 46,  val: 51},
-			{ h: 50,  val: 46},
-			{ h: 60,  val: 43},
-			{ h: 80,  val: 41},
-			{ h: 100, val: 41},
-			{ h: 120, val: 41},
-			{ h: 140, val: 41},
-			{ h: 160, val: 40},
-			{ h: 180, val: 40},
-			{ h: 190, val: 44},
-			{ h: 198, val: 50},
-			{ h: 200, val: 58},
-			{ h: 220, val: 58},
-			{ h: 240, val: 58},
-			{ h: 255, val: 55},
-			{ h: 266, val: 55},
-			{ h: 270, val: 58},
-			{ h: 280, val: 58},
-			{ h: 290, val: 47},
-			{ h: 300, val: 43},
-			{ h: 310, val: 48},
-			{ h: 320, val: 48},
-			{ h: 340, val: 52},
-			{ h: 360, val: 53},
-		],
-	},
-
-	// Changes added to the color of the currently selected plane
-	selected : { h: 0, s: 10, l: 5 },
-
-	// Changes added to the color of planes that have stale position info
-	stale :    { h: 0, s: -35, l: 9 },
-
-	// Changes added to the color of planes that have positions from mlat
-	mlat :     { h: 0, s: 0, l: 0 }
+        unknown :  { h: 120, s: 36, l: 24 },
+        ground  :  { h: 0, s: 0, l: 30 },
+        air : { h: [ { alt: -5000, val: 48 } ], s: 100, l: 50 },
+        selected : { h: 0, s: 0, l: 95 },
+        stale :    { h: 120, s: 36, l: 24 },
+        mlat :     { h: 295, s: 93, l: 68 }
 };
 
-// For a monochrome display try this:
-// ColorByAlt = {
-//         unknown :  { h: 0, s: 0, l: 40 },
-//         ground  :  { h: 0, s: 0, l: 30 },
-//         air :      { h: [ { alt: 0, val: 0 } ], s: 0, l: 50 },
-//         selected : { h: 0, s: 0, l: +30 },
-//         stale :    { h: 0, s: 0, l: +30 },
-//         mlat :     { h: 0, s: 0, l: -10 }
-// };
-
 // Also called range rings :)
-let SiteCircles = true; // true to show circles (only shown if the center marker is shown)
+// IBOSOFT CUSTOMIZATION
+let SiteCircles = false; // false to hide range circles
 // In miles, nautical miles, or km (depending settings value 'DisplayUnits')
-let SiteCirclesDistances = new Array(100, 150, 200);
+let SiteCirclesDistances = new Array(20, 50, 100);
 // When more circles defined than cirle colors last color will be used or black by default
 let SiteCirclesColors = ['#000000', '#000000', '#000000'];
 // Show circles using dashed line (CAUTION, can be slow, especially when zooming in a lot)
 let SiteCirclesLineDash = null; // null - solid line, [5, 5] - dashed line with 5 pixel lines and spaces in between
 
 // Controls page title, righthand pane when nothing is selected
-let PageName = "tar1090";
+// IBOSOFT CUSTOMIZATION
+let PageName = "Ibosoft Surveillance";
 
 // Show country flags by ICAO addresses?
 let ShowFlags = true;
@@ -220,7 +212,8 @@ let ShowFlags = true;
 let FlagPath = "";
 
 // Set to false to disable the ChartBundle base layers (US coverage only)
-let ChartBundleLayers = true;
+// IBOSOFT CUSTOMIZATION
+let ChartBundleLayers = null; // katmandan iptal edildi
 
 // Provide a Bing Maps API key here to enable the Bing imagery layer.
 // You can obtain a free key (with usage limits) at
@@ -248,7 +241,8 @@ let mapOrientation = 0; // This determines what is up, normally north (0 degrees
 let utcTimes = null;
 
 // Use UTC for live labels
-let utcTimesLive = false;
+// IBOSOFT CUSTOMIZATION
+let utcTimesLive = true;
 
 // Use UTC for historic labels
 let utcTimesHistoric = true;
@@ -282,11 +276,13 @@ let imageConfigLink = "";
 let imageConfigText = "";
 
 let flightawareLinks = false;
-let shareBaseUrl = false;
-let planespottersLinks = false;
+// IBOSOFT CUSTOMIZATION
+let shareBaseUrl = 'https://atc.ibosoft.net.tr/surveillance/';
+let planespottersLinks = true;
 
 // show links to various registration websites (not all countries)
-let registrationLinks = true;
+// IBOSOFT CUSTOMIZATION
+let registrationLinks = false;
 
 // Filter implausible positions (required speed > Mach 2.5)
 // valid values: true, false, "onlyMLAT" ("" required)
@@ -312,22 +308,23 @@ let tempTrailsTimeout = 90;
 let squareMania = false;
 
 // Columns that have a // in front of them are shown.
+// IBOSOFT CUSTOMIZATION — custom column visibility
 let HideCols = [
-	"#icao",
+//	"#icao",
 //	"#country",
-//	"#flight",
+	"#flight",
 //	"#route",
-	"#registration",
+//	"#registration",
 //	"#type",
 //	"#squawk",
 //	"#altitude",
 //	"#speed",
 	"#vert_rate",
-//	"#sitedist",
+	"#sitedist",
 	"#track",
 	"#msgs",
 	"#seen",
-//	"#rssi",
+	"#rssi",
 	"#lat",
 	"#lon",
 	"#data_source",
@@ -346,7 +343,8 @@ let planespottersAPIurl = "https://api.planespotters.net/pub/photos/";
 let planespottingAPI = false;
 
 // get flight route from routeApi service default setting (toggle via settings checkbox)
-let useRouteAPI = false;
+// IBOSOFT CUSTOMIZATION
+let useRouteAPI = true;
 // show IATA airport codes instead of ICAO when using the route API
 let useIataAirportCodes = true; // DEPRECATED, forces routeDisplay to icao when set to false
 // configure route display, possible values: iata, icao, city (can use multiple like this: 'iata,city')
@@ -368,7 +366,8 @@ let showSil = false;
 // provide ZZZZ.png to be shown when the type is not known.
 // this feature is provided as is please don't expect tar1090's support for getting the pictures right.
 
-let labelsGeom = false; // labels: uses geometric altitude (WGS84 ellipsoid unless geomUseEGM is enabled
+// IBOSOFT CUSTOMIZATION
+let labelsGeom = true; // labels: uses geometric altitude (WGS84 ellipsoid unless geomUseEGM is enabled
 let geomUseEGM = false; // use EGM96 for displaying geometric altitudes (extra load time!)
 let baroUseQNH = false;
 
@@ -379,18 +378,19 @@ let wideInfoBlock = false;
 let baseInfoBlockWidth = 200;
 
 // enable DWD Radolan (NEXRAD like weather for Germany)
-let enableDWD = true;
+let enableDWD = true; // katmadan iptal edildi
 
 let lastLeg = true;
 
 let hideButtons = false;
 
-let askLocation = false; // requires https for geolocation
+let askLocation = false; // requires https for geolocation — AIS Map SDK handles location separately
 
 let filterMaxRange = 1e8; // 100 000 km should include all planes on earth ;)
 
-let jaeroTimeout = 35 * 60; // in seconds
-let jaeroLabel = "ADS-C"; // relabel the ADS-C data if used for other purposes (i.e. HFDL / acars2pos)
+// IBOSOFT CUSTOMIZATION
+let jaeroTimeout = 600; // in seconds
+let jaeroLabel = "ACARS (VDL)"; // relabel the ADS-C data if used for other purposes (i.e. HFDL / acars2pos)
 
 let seenTimeout = 58; // in seconds
 let seenTimeoutMlat = 58; // in seconds
@@ -418,30 +418,31 @@ let OutlineMlatColor = null;
 
 let tableColorsDark;
 let tableColorsLight;
+// IBOSOFT CUSTOMIZATION — custom color scheme (adsb/mlat swapped, uat colors adjusted)
 let tableColors = {
     unselected: {
-        adsb:      "#d8f4ff",
-        mlat:      "#FDF7DD",
-        uat:       "#C4FFDC",
-        adsr:      "#C4FFDC",
+        adsb:      "#FDF7DD",
+        mlat:      "#d8f4ff",
+        uat:       "#ffa64d",
+        adsr:      "#ffa64d",
         adsc:      "#9efa9e",
         modeS:     "#d8d8ff",
-        tisb:      "#ffd8e6",
+        tisb:      "#ffc4d8",
         unknown:   "#dcdcdc",
-        other:   "#dcdcdc",
-        ais:     "#dcdcdc",
+        other:     "#555555",
+        ais:       "#dcdcdc",
     },
     selected: {
-        adsb:      "#88DDFF",
-        mlat:      "#F1DD83",
-        uat:       "#66FFA6",
-        adsr:      "#66FFA6",
+        adsb:      "#F1DD83",
+        mlat:      "#88DDFF",
+        uat:       "#ff7f00",
+        adsr:      "#ff7f00",
         adsc:      "#75f075",
         modeS:     "#BEBEFF",
-        tisb:      "#FFC1D8",
+        tisb:      "#f17ea1",
         unknown:   "#bcbcbc",
-        other:   "#bcbcbc",
-        ais:   "#bcbcbc",
+        other:     "#777777",
+        ais:       "#bcbcbc",
     },
     special: {
         7500:      "#ff0000",
@@ -469,7 +470,8 @@ let SiteLat     = null;            // position of the marker
 let SiteLon     = null;
 
 // Default center of the map if no Site location is set
-let DefaultCenterLat = 40.56;
-let DefaultCenterLon = -73.66
+// IBOSOFT CUSTOMIZATION — Türkiye merkezi (Gerek yok AIS MAP SDK'dan aayrlanmalı.)
+let DefaultCenterLat = 39.0;
+let DefaultCenterLon = 33.0
 
 let MergeNonIcao = false; // set to true to merge non icao hex with the icao hex (remove the ~)

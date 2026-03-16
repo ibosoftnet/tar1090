@@ -1790,19 +1790,25 @@ jQuery('#selected_altitude_geom1')
 }
 
 function initLegend(colors) {
+    // IBOSOFT CUSTOMIZATION: Legend rewritten to show Mode S categories more clearly
     let html = '';
-    html += '<div class="legendTitle" style="background-color:' + colors['adsb'] + ';">ADS-B</div>';
+    html += '<div class="legendTitle" style="background-color:' + colors['modeS'] + ';">Mode S (No ADS-B Position)</div>';
+    html += '<div class="legendTitle" style="background-color:' + colors['adsb'] + ';">Mode S (ADS-B Position)</div>';
+    html += '<div class="legendTitle" style="background-color:' + colors['tisb'] + ';">Mode S (Non-transponder)</div>';
     html += '<div class="legendTitle" style="background-color:' + colors['uat'] + ';">UAT / ADS-R</div>';
     html += '<div class="legendTitle" style="background-color:' + colors['mlat'] + ';">MLAT</div>';
     html += '<br>';
-    html += '<div class="legendTitle" style="background-color:' + colors['tisb'] + ';">TIS-B</div>';
-    if (!globeIndex)
-        html += '<div class="legendTitle" style="background-color:' + colors['modeS'] + ';">Mode-S</div>';
-    if (globeIndex)
-        html += '<div class="legendTitle" style="background-color:' + colors['other'] + ';">Other</div>';
+
+    // IBOSOFT CUSTOMIZATION: REMOVED conditional globeIndex-based Mode-S/Other items (always show Other)
+    // if (!globeIndex)
+    //     html += '<div class="legendTitle" style="background-color:' + colors['modeS'] + ';">Mode-S</div>';
+    // if (globeIndex)
+    //     html += '<div class="legendTitle" style="background-color:' + colors['other'] + ';">Other</div>';
+
     if (aiscatcher_server)
         html += '<div class="legendTitle" style="background-color:' + colors['ais'] + ';">AIS</div>';
     html += '<div class="legendTitle" style="background-color:' + colors['adsc'] + `;">${jaeroLabel}</div>`;
+    html += '<div class="legendTitle" style="background-color:' + colors['other'] + ';">Other</div>';
 
     document.getElementById('legend').innerHTML = html;
 }
@@ -1812,15 +1818,15 @@ function initSourceFilter(colors) {
         return '<li class="ui-widget-content" style="background-color:' + color + ';" id="source-filter-' + key + '">' + text + '</li>';
     };
 
+    // IBOSOFT CUSTOMIZATION: Source filter order changed to Mode S first, then ADS-B, TIS-B, UAT, MLAT, ACARS, Other
     let html = '';
+    html += createFilter(colors['modeS'], 'Mode S', sources[4]);
     html += createFilter(colors['adsb'], 'ADS-B', sources[0]);
-
+    html += createFilter(colors['tisb'], 'TIS-B', sources[3]);
     html += createFilter(colors['uat'], 'UAT / ADS-R', sources[1][0]);
     html += createFilter(colors['mlat'], 'MLAT', sources[2]);
-    html += createFilter(colors['tisb'], 'TIS-B', sources[3]);
-    html += createFilter(colors['modeS'], 'Mode-S', sources[4]);
-    html += createFilter(colors['other'], 'Other', sources[5]);
     html += createFilter(colors['adsc'], jaeroLabel, sources[6]);
+    html += createFilter(colors['other'], 'Other', sources[5]);
 
     if (aiscatcher_server) {
         html += createFilter(colors['ais'], 'AIS', sources[7]);
@@ -1851,11 +1857,12 @@ function initFlagFilter(colors) {
         return '<li class="ui-widget-content" style="background-color:' + color + ';" id="flag-filter-' + key + '">' + text + '</li>';
     };
 
+    // IBOSOFT CUSTOMIZATION: REMOVED flag-based filters (Military, PIA, LADD) — not applicable in this context
     let html = '';
-    html += createFilter(colors['tisb'], 'Military', flagFilterValues[0]);
+    //html += createFilter(colors['tisb'], 'Military', flagFilterValues[0]);
     //html += createFilter(colors['mlat'], 'Interesting');
-    html += createFilter(colors['uat'], 'PIA', flagFilterValues[1]);
-    html += createFilter(colors['adsb'], 'LADD', flagFilterValues[2]);
+    //html += createFilter(colors['uat'], 'PIA', flagFilterValues[1]);
+    //html += createFilter(colors['adsb'], 'LADD', flagFilterValues[2]);
 
     document.getElementById('flagFilter').innerHTML = html;
 
@@ -2533,64 +2540,81 @@ function ol_map_init() {
         console.log(spritesDataURL);
     }
 
-    OLMap = new ol.Map({
-        target: 'map_canvas',
-        layers: layers_group,
-        view: new ol.View({
-            center: ol.proj.fromLonLat([CenterLon, CenterLat]),
-            zoom: g.zoomLvl,
-            multiWorld: true,
-        }),
-        controls: [new ol.control.Zoom({delta: 1, duration: 0, target: 'map_canvas',}),
-            new ol.control.Attribution({collapsed: true}),
-            new ol.control.ScaleLine({units: DisplayUnits})
-        ],
-        interactions: new ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false,}),
-        maxTilesLoading: 4,
+    // IBOSOFT CUSTOMIZATION: ol_map_init rewritten to use AIS Map SDK's map instance.
+    // Base layer management and LayerSwitcher removed — SDK handles those.
+
+    // IBOSOFT CUSTOMIZATION: REMOVED
+    // OLMap = new ol.Map({
+    //     target: 'map_canvas',
+    //     layers: layers_group,
+    //     view: new ol.View({
+    //         center: ol.proj.fromLonLat([CenterLon, CenterLat]),
+    //         zoom: g.zoomLvl,
+    //         multiWorld: true,
+    //     }),
+    //     controls: [new ol.control.Zoom({delta: 1, duration: 0, target: 'map_canvas',}),
+    //         new ol.control.Attribution({collapsed: true}),
+    //         new ol.control.ScaleLine({units: DisplayUnits})
+    //     ],
+    //     interactions: new ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false,}),
+    //     maxTilesLoading: 4,
+    // });
+
+    // Use AIS Map SDK's map (already initialised on map_canvas).
+    // tar1090's aircraft/vector layers are in layers_group and will be added below.
+    OLMap = window.AisMap.getMap();
+
+    // Override the SDK's default view with tar1090's saved centre/zoom.
+    // Keep the existing projection (AisMapProjection may have changed it).
+    OLMap.getView().setCenter(ol.proj.fromLonLat([CenterLon, CenterLat]));
+    OLMap.getView().setZoom(g.zoomLvl);
+
+    // Attach tar1090's aircraft layers (vectors, WebGL points, etc.) on top.
+    OLMap.addLayer(layers_group);
+
+    // Disable pinch-rotate and alt-shift-drag-rotate (same as before).
+    OLMap.getInteractions().getArray().slice().forEach(function(interaction) {
+        if (interaction instanceof ol.interaction.PinchRotate ||
+            interaction instanceof ol.interaction.DragRotate) {
+            OLMap.removeInteraction(interaction);
+        }
     });
 
     console.time('webglInit');
     webglInit();
     console.timeEnd('webglInit');
 
+    // IBOSOFT CUSTOMIZATION: REMOVED base layer type handling (MapType_tar1090 / LayerSwitcher.forEachRecursive for 'base')
+    // let foundType = false;
+    // ol.control.LayerSwitcher.forEachRecursive(layers_group, function(lyr) {
+    //     if (lyr.get('name') && lyr.get('type') == 'base') {
+    //         if (MapType_tar1090 == lyr.get('name')) { foundType = true; }
+    //     }
+    // });
+    // if (!foundType) { MapType_tar1090 = "osm"; }
+    // ol.control.LayerSwitcher.forEachRecursive(layers_group, function(lyr) {
+    //     if (!lyr.get('name')) return;
+    //     if (lyr.get('type') == 'base') {
+    //         if (MapType_tar1090 == lyr.get('name')) {
+    //             foundType = true; lyr.setVisible(true); mapTypeSettings();
+    //             const onVisible = lyr.get('onVisible'); onVisible && onVisible(lyr);
+    //         } else { lyr.setVisible(false); }
+    //         lyr.on('change:visible', function(evt) {
+    //             if (evt.target.getVisible()) {
+    //                 MapType_tar1090 = loStore['MapType_tar1090'] = evt.target.get('name');
+    //                 mapTypeSettings();
+    //                 const onVisible = lyr.get('onVisible'); onVisible && onVisible(lyr);
+    //             }
+    //         });
+    //     } else if ...
+    // });
+    // if (!foundType) { ol.control.LayerSwitcher.forEachRecursive(...) }
 
-    let foundType = false;
-    ol.control.LayerSwitcher.forEachRecursive(layers_group, function(lyr) {
-        if (lyr.get('name') && lyr.get('type') == 'base') {
-            if (MapType_tar1090 == lyr.get('name')) {
-                foundType = true;
-            }
-        }
-    });
-    if (!foundType) {
-        MapType_tar1090 = "osm";
-    }
-
+    // Restore saved visibility for tar1090's overlay layers (range rings, etc.).
     ol.control.LayerSwitcher.forEachRecursive(layers_group, function(lyr) {
         if (!lyr.get('name'))
             return;
-
-        if (lyr.get('type') == 'base') {
-            if (MapType_tar1090 == lyr.get('name')) {
-                foundType = true;
-                lyr.setVisible(true);
-
-                mapTypeSettings();
-                const onVisible = lyr.get('onVisible');
-                onVisible && onVisible(lyr);
-            } else {
-                lyr.setVisible(false);
-            }
-
-            lyr.on('change:visible', function(evt) {
-                if (evt.target.getVisible()) {
-                    MapType_tar1090 = loStore['MapType_tar1090'] = evt.target.get('name');
-                    mapTypeSettings();
-                    const onVisible = lyr.get('onVisible');
-                    onVisible && onVisible(lyr);
-                }
-            });
-        } else if (lyr.get('type') === 'overlay') {
+        if (lyr.get('type') === 'overlay') {
             if (
                 loStore['layer_' + lyr.get('name')] == 'true'
                 || enableOverlays.indexOf(lyr.get('name')) >= 0
@@ -2601,34 +2625,23 @@ function ol_map_init() {
             if (loStore['layer_' + lyr.get('name')] == 'false') {
                 lyr.setVisible(false);
             }
-
             lyr.on('change:visible', function(evt) {
                 loStore['layer_' + evt.target.get('name')] = evt.target.getVisible();
             });
         }
-    })
-
-    if (!foundType) {
-        ol.control.LayerSwitcher.forEachRecursive(layers_group, function(lyr) {
-            if (foundType)
-                return;
-            if (lyr.get('type') === 'base') {
-                lyr.setVisible(true);
-                foundType = true;
-            }
-        });
-    }
+    });
 
     OLProj = OLMap.getView().getProjection();
     OLProjExtent = OLProj.getExtent();
 
     OLMap.getView().setRotation(g.mapOrientation); // adjust orientation
 
-    OLMap.addControl(new ol.control.LayerSwitcher({
-        groupSelectStyle: 'none',
-        activationMode: 'click', // click sucks in the current implementation
-        target: 'map_canvas',
-    }));
+    // IBOSOFT CUSTOMIZATION: REMOVED ol.control.LayerSwitcher — AIS Map SDK has its own Charts & Layers panel
+    // OLMap.addControl(new ol.control.LayerSwitcher({
+    //     groupSelectStyle: 'none',
+    //     activationMode: 'click',
+    //     target: 'map_canvas',
+    // }));
 
     OLMap.on('movestart', function(event) {
         if (webgl) {
