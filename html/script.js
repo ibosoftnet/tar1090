@@ -805,7 +805,10 @@ function initialize() {
     earlyInitPage();
     initMapEarly();
 
-    jQuery.when(configureReceiver, heatmapDefer).done(function() {
+    // IBOSOFT CUSTOMIZATION: AisMapReady eklendi. AIS Map SDK loader'ı modülleri async
+    // yüklediğinden, ol_map_init() (initMap içinde AisMap.getMap() çağırır) AisMap hazır
+    // olana kadar bekletilir. AisMapReady index.html'deki inline blokta tanımlanır.
+    jQuery.when(configureReceiver, heatmapDefer, window.AisMapReady).done(function() {
 
         if (receiverJson) {
             if (receiverJson.trace_hist_only)

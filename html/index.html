@@ -1141,10 +1141,17 @@
         ]
       };
 
+      // AIS Map SDK loader'ı artık modülleri ASYNC (sıralı-paralel) yüklüyor;
+      // AisMapOnReady senkron değil, tüm modüller yüklenince tetikleniyor. Bu Deferred,
+      // tar1090'ın ol_map_init()'ini (AisMap.getMap() çağırır) AisMap hazır olana kadar
+      // geciktirir — bkz. script.js initialize() içindeki jQuery.when.
+      window.AisMapReady = jQuery.Deferred();
+
       // Tüm SDK modülleri yüklenince haritayı başlat.
       // tar1090's ol_map_init() will later call AisMap.getMap() to obtain this instance.
       window.AisMapOnReady = function () {
         AisMap.init({ target: 'map_canvas' });
+        window.AisMapReady.resolve();
       };
     </script>
     <script src="https://ais-map.ibosoft.net.tr/ais-map-loader.js"></script>
